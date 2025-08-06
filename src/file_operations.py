@@ -1,7 +1,6 @@
 import shutil
 import os
 from audio_conversion import to_ogg
-from tqdm import tqdm
 # make sure subdir is absolute path
 def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
     for file in subdir.iterdir():
