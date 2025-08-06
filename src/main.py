@@ -22,7 +22,7 @@ def main():
     all_folder_path = bms_file_reading.get_all_relative_paths(all_bms_path)
     for bms_folder in all_folder_path:
         print(f"processing {bms_folder}")
-        process_files_subdirectory(bms_folder, output_path, base_path)
+        process_files_subdirectory(bms_folder, output_path, base_path, in_place=True)
 
 
 if __name__ == "__main__":
