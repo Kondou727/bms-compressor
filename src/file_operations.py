@@ -12,6 +12,8 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                     os.remove(file)
             else:
                 full_output_path = output_path / file.relative_to(base_path)
+                if not full_output_path.exists():
+                    full_output_path.mkdir(parents=True)
                 if file.suffix.lower() == '.wav':
                     to_ogg(file, output_path, base_path)
                 else:

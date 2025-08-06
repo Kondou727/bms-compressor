@@ -1,1 +1,6 @@
 __pycache__/
+test/
+converted/
+src/dist/
+src/build/
+.venv
