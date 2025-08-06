@@ -38,12 +38,12 @@ def get_all_relative_paths(paths):
         output.add(path.parent)
     return output
 
-def replace_file_extension(filepath, input_extension, output_extension):
+def replace_file_extension(filepath, output_file_path, input_extension, output_extension):
     with open(filepath, 'r') as file:
         filedata = file.read()
     filedata = filedata.replace(input_extension, output_extension)
     filepath = Path(filepath)
-    with open(Path.joinpath(filepath.parent, "converted", filepath.name), 'w') as file:
+    with open(output_file_path, 'w') as file:
         file.write(filedata)
 
 if __name__ == "__main__":
