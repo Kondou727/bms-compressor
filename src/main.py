@@ -21,7 +21,7 @@ def main():
     all_bms_path = bms_file_reading.list_all_files_with_extension(base_path, "bms") + bms_file_reading.list_all_files_with_extension(base_path, "bme")
     all_folder_path = bms_file_reading.get_all_relative_paths(all_bms_path)
     for bms_folder in all_folder_path:
-        print(f"processing {bms_folder}")
+        print(f"Processing {bms_folder}...")
         process_files_subdirectory(bms_folder, output_path, base_path, in_place=True)
 
 

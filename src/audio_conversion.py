@@ -1,5 +1,4 @@
 import ffmpeg
-from pathlib import Path
 # input file should be a Path object containing the absolute path of the input file
 def to_ogg(input_file, output_path, base_path):
     relative_path = input_file.relative_to(base_path)
@@ -16,4 +15,4 @@ def to_ogg(input_file, output_path, base_path):
     
 
 if __name__ == "__main__":
-    pass
+    raise Exception("This should not be ran independently.")

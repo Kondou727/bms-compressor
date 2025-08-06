@@ -1,10 +1,11 @@
 import shutil
 import os
 from audio_conversion import to_ogg
+from tqdm import tqdm
 # make sure subdir is absolute path
 def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
     for file in subdir.iterdir():
-        print(f"now on {file}")
+        #print(f"now on {file}")
         if file.is_file():
             if in_place:
                 if file.suffix.lower() == '.wav':
@@ -15,9 +16,11 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                 if file.suffix.lower() == '.wav':
                     to_ogg(file, output_path, base_path)
                 else:
-                    print(f"{file} -> {full_output_path}")
+                    #print(f"{file} -> {full_output_path}")
                     shutil.copy(file, full_output_path)
 
 
+if __name__ == "__main__":
+    raise Exception("This should not be ran independently.")
                 
     

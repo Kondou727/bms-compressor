@@ -27,8 +27,4 @@ def get_all_relative_paths(paths):
 
 
 if __name__ == "__main__":
-    all_bms = list_all_files_with_extension(r"G:\nythil bms pack\eng\A", "bms")
-    all_bms += list_all_files_with_extension(r"G:\nythil bms pack\eng\A", "bme")
-    all_path = get_all_relative_paths(all_bms)
-    for path in all_path:
-        print(get_audio_files(path))
+    raise Exception("This should not be ran independently.")
