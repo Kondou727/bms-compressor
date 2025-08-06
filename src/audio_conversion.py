@@ -1,16 +1,18 @@
 import ffmpeg
 from pathlib import Path
-def wav_to_ogg(input_file, filepath):
-    input_file = Path.joinpath(filepath.parent, input_file)
-    output_file = Path.joinpath(input_file.parent, "converted", input_file.name).with_suffix('.ogg')
-    print(f"input = {input_file}\noutput = {output_file}")
+# input file should be a Path object containing the absolute path of the input file
+def to_ogg(input_file, output_path, base_path):
+    relative_path = input_file.relative_to(base_path)
+    output_file = output_path / relative_path.with_suffix('.ogg')
+    print(f"{input_file} -> {output_file}")
     output_file.parent.mkdir(parents=True, exist_ok=True)
-    ffmpeg.input(str(input_file)).output(str(output_file), aq=5).run()
+    try:
+        ffmpeg.input(str(input_file)).output(str(output_file), aq=5).global_args('-n').run(quiet=True)
+    except ffmpeg._run.Error:
+        print(f"{output_file} already exists! Skipping...")
+    
 
-def mass_conversion(input_dict, filepath):
-    filepath = Path(filepath)
-    for filename in input_dict.values():
-        wav_to_ogg(filename, filepath)
+    
 
 if __name__ == "__main__":
-    wav_to_ogg(r"C:\Users\Kondou\Documents\bms-compressor\test\[syatten] aliceblue (Radio Edit) (SP ANOTHER).wav")
+    pass
