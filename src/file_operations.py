@@ -1,16 +1,22 @@
 import shutil
 import os
 import stat
+import logging
 from audio_conversion import to_ogg
 from video_conversion import to_mp4
 from image_conversion import to_jpg
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
+
 # make sure subdir is absolute path
 def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
     if (subdir/ "processed_w") in subdir.iterdir():
+        logger.info(f"processed_w found at {subdir}, skipping")
         print("Already processed, skipping...")
         return
+    video_converted = False
     for file in subdir.iterdir():
-        video_converted = False
         if file.is_file():
             if in_place:
                 if file.suffix.lower() == '.wav':
@@ -51,6 +57,7 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                     #print(f"{file} -> {full_output_path}")
                     shutil.copy(file, full_output_path)
     open(subdir / "processed_w", 'a').close()
+    logger.info(f"finished processing {subdir}")
     print(f"finished processing {subdir}")
 if __name__ == "__main__":
     raise Exception("This should not be ran independently.")

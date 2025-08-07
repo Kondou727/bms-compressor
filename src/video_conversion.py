@@ -2,7 +2,6 @@ import ffmpeg
 import subprocess
 import os
 import stat
-from pathlib import Path
 def to_mp4(input_file, output_path, base_path):
     relative_path = input_file.relative_to(base_path)
     output_file = output_path / relative_path.with_suffix('.mp4')

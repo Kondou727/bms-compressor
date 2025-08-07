@@ -1,6 +1,10 @@
 import bms_file_reading
 from pathlib import Path
 from file_operations import process_files_subdirectory
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
+
 def get_output_path(path):
     path = Path(path)
     # Go up one directory (.parent) then add "Converted" then add the last part
@@ -8,7 +12,7 @@ def get_output_path(path):
     return converted_path
 def main():
     base_path = Path(input("Enter bms folder path: ").strip())
-    if not base_path.exists():
+    if not base_path.exists() or base_path == "":
         raise Exception("Path not found!")
     in_place = input("Should files be modified in-place (y) or outputted to a different folder (n): ").lower().strip()
     while (in_place not in ['y', 'n']):
@@ -32,7 +36,9 @@ def main():
             raise Exception("Path not found!")
     all_bms_path = bms_file_reading.list_all_files_with_extension(base_path, "bms") + bms_file_reading.list_all_files_with_extension(base_path, "bme")
     all_folder_path = bms_file_reading.get_all_relative_paths(all_bms_path)
-    for bms_folder in all_folder_path:
+    logger.info(f"base_path = {base_path}, output_path = {output_path} (should be same as base_path if in_place is true), in_place = {in_place}")
+    logger.info(f"folders found: {all_folder_path}")
+    for bms_folder in sorted(all_folder_path):
         print(f"Processing {bms_folder}...")
         process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place)
 
