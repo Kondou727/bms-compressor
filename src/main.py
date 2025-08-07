@@ -2,7 +2,10 @@ import bms_file_reading
 from pathlib import Path
 from file_operations import process_files_subdirectory
 from tqdm import tqdm
+import os
+import shutil
 import logging
+import time
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
 
@@ -45,4 +48,7 @@ def main():
 
 
 if __name__ == "__main__":
+    if os.path.exists('latest.log'):
+        shutil.copy('latest.log', f"{time.strftime("%Y%m%d-%H%M%S")}.log")
+        open('latest.log', 'w').close()
     main()

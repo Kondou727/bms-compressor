@@ -15,7 +15,7 @@ def to_ogg(input_file, output_path, base_path):
     try:
         ffmpeg.input(str(input_file)).output(str(output_file), aq=AQ).global_args('-loglevel', 'quiet').run()
     except ffmpeg._run.Error as e:
-        print(e)
+        logging.warning(e)
     
 
 if __name__ == "__main__":

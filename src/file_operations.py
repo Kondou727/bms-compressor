@@ -8,7 +8,7 @@ from video_conversion import to_mp4
 from image_conversion import to_jpg
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
+logging.basicConfig(filename='latest.log' ,level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
 
 # make sure subdir is absolute path
 def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
