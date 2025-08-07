@@ -5,3 +5,4 @@ src/dist/
 src/build/
 .venv
 **/*.log
+**/*.log.mbtree
