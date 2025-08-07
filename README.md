@@ -13,6 +13,6 @@ get [uv](https://github.com/astral-sh/uv) and run `uv run src/main.py` at root d
 ### info
 small personal project for learning, will not fix bugs  
 compression quality can be changed in `src/constants.py`
-
+existing .oggs are not re-encoded because I don't feel like the time trade-off would be worth it
 
 
