@@ -39,7 +39,7 @@ def main():
     all_folder_path = bms_file_reading.get_all_relative_paths(all_bms_path)
     logger.info(f"base_path = {base_path}, output_path = {output_path} (should be same as base_path if in_place is true), in_place = {in_place}")
     logger.info(f"folders found: {all_folder_path}")
-    for bms_folder in tqdm(sorted(all_folder_path), desc="Progress", unit="folders"):
+    for bms_folder in tqdm(sorted(all_folder_path), desc="Progress", unit="folders", position=0):
         logger.info(f"Processing {bms_folder}...")
         process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place)
 

@@ -1,5 +1,6 @@
 import ffmpeg
 import logging
+from constants import AQ
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
 # input file should be a Path object containing the absolute path of the input file
@@ -12,7 +13,7 @@ def to_ogg(input_file, output_path, base_path):
         return
     output_file.parent.mkdir(parents=True, exist_ok=True)
     try:
-        ffmpeg.input(str(input_file)).output(str(output_file), aq=5).global_args('-loglevel', 'quiet').run()
+        ffmpeg.input(str(input_file)).output(str(output_file), aq=AQ).global_args('-loglevel', 'quiet').run()
     except ffmpeg._run.Error as e:
         print(e)
     

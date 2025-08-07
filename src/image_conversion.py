@@ -2,6 +2,7 @@ from PIL import Image
 import os
 import stat
 import logging
+from constants import JPG_QUALITY
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
 def to_jpg(input_file, output_path, base_path):
@@ -17,7 +18,7 @@ def to_jpg(input_file, output_path, base_path):
     if img.mode != "RGB":
         img = img.convert("RGB")
 
-    img.save(output_file, quality=80)
+    img.save(output_file, quality=JPG_QUALITY)
     
     try:
         os.remove(input_file)
