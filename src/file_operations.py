@@ -4,8 +4,9 @@ import stat
 from audio_conversion import to_ogg
 # make sure subdir is absolute path
 def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
+    if (subdir/ "processed_w") in subdir.iterdir():
+        print("Already processed, skipping...")
     for file in subdir.iterdir():
-        #print(f"now on {file}")
         if file.is_file():
             if in_place:
                 if file.suffix.lower() == '.wav':
@@ -24,8 +25,8 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                 else:
                     #print(f"{file} -> {full_output_path}")
                     shutil.copy(file, full_output_path)
-
-
+    open(subdir / "processed_w", 'a').close()
+    print(f"finished processing {subdir}")
 if __name__ == "__main__":
     raise Exception("This should not be ran independently.")
                 

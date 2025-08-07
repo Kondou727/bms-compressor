@@ -4,3 +4,4 @@ converted/
 src/dist/
 src/build/
 .venv
+**/*.log
