@@ -9,7 +9,7 @@ def to_ogg(input_file, output_path, base_path):
         return
     output_file.parent.mkdir(parents=True, exist_ok=True)
     try:
-        ffmpeg.input(str(input_file)).output(str(output_file), aq=5).global_args('-n').run(quiet=True)
+        ffmpeg.input(str(input_file)).output(str(output_file), aq=5).global_args('-loglevel', 'quiet', '-stats').run()
     except ffmpeg._run.Error as e:
         print(e)
     
