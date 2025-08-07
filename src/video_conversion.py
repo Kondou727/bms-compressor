@@ -2,17 +2,19 @@ import ffmpeg
 import subprocess
 import os
 import stat
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
 def to_mp4(input_file, output_path, base_path):
     relative_path = input_file.relative_to(base_path)
     output_file = output_path / relative_path.with_suffix('.mp4')
-    print(f"{input_file} -> {output_file}")
-
+    logging.info(f"{input_file} -> {output_file}")
     if output_file.exists():
         new_path = input_file.with_stem(input_file.stem + "_old")
         os.rename(input_file, input_file.with_stem(input_file.stem + "_old"))
         input_file = new_path
     output_file.parent.mkdir(parents=True, exist_ok=True)
-    ffmpeg.input(str(input_file)).output(str(output_file), vcodec='libx264', preset="slow", crf=36, an=None).global_args('-loglevel', 'quiet', '-stats').run()
+    ffmpeg.input(str(input_file)).output(str(output_file), vcodec='libx264', preset="slow", crf=36, an=None).global_args('-loglevel', 'quiet').run()
 
     # remove old file
     try:

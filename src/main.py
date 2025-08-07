@@ -1,6 +1,7 @@
 import bms_file_reading
 from pathlib import Path
 from file_operations import process_files_subdirectory
+from tqdm import tqdm
 import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
@@ -38,8 +39,8 @@ def main():
     all_folder_path = bms_file_reading.get_all_relative_paths(all_bms_path)
     logger.info(f"base_path = {base_path}, output_path = {output_path} (should be same as base_path if in_place is true), in_place = {in_place}")
     logger.info(f"folders found: {all_folder_path}")
-    for bms_folder in sorted(all_folder_path):
-        print(f"Processing {bms_folder}...")
+    for bms_folder in tqdm(sorted(all_folder_path), desc="Progress", unit="folders"):
+        logger.info(f"Processing {bms_folder}...")
         process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place)
 
 

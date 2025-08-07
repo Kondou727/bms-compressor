@@ -1,11 +1,13 @@
 from PIL import Image
 import os
 import stat
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
 def to_jpg(input_file, output_path, base_path):
     relative_path = input_file.relative_to(base_path)
     output_file = output_path / relative_path.with_suffix('.jpg')
-    print(f"{input_file} -> {output_file}")
-    # if reprocessing or file is already jpg
+    logging.info(f"{input_file} -> {output_file}")    # if reprocessing or file is already jpg
     if output_file.exists():
         new_path = input_file.with_stem(input_file.stem + "_old")
         os.rename(input_file, input_file.with_stem(input_file.stem + "_old"))
