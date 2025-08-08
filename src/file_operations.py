@@ -7,7 +7,7 @@ from audio_conversion import to_ogg
 from video_conversion import to_mp4
 from image_conversion import to_jpg
 from pathlib import Path
-
+from multiprocessing import current_process
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     filename="latest.log",
@@ -40,63 +40,64 @@ def process_files_subdirectory(
     if ignore_processed:
         video_list.remove(".mp4")
         image_list.remove(".jpg")
-    for file in tqdm(list_files(subdir), desc=str(subdir), leave=False):
-        if file.stem.endswith("_old"):
-            try:
-                os.rename(file, file.with_stem(file.stem.replace("_old", "")))
-            except FileExistsError:
-                pass
-        if in_place:
-            if file.suffix.lower() == ".wav":
-                to_ogg(file, base_path, base_path)
+    current = current_process()
+    with tqdm(list_files(subdir), desc=str(subdir), leave=False, position=current._identity[0] - 1) as pbar:
+        for file in pbar:
+            if file.stem.endswith("_old"):
                 try:
-                    os.remove(file)
-                except PermissionError:
-                    os.chmod(file, stat.S_IWRITE)
-                    os.remove(file)
-            if file.suffix.lower() in video_list:
-                # since the name might be changed, the file deletion will be handled in function
-                if video_converted:
-                    logger.info("multiple videos detected, deleting the extra file...")
+                    os.rename(file, file.with_stem(file.stem.replace("_old", "")))
+                except FileExistsError:
+                    pass
+            if in_place:
+                if file.suffix.lower() == ".wav":
+                    to_ogg(file, base_path, base_path)
                     try:
                         os.remove(file)
                     except PermissionError:
                         os.chmod(file, stat.S_IWRITE)
                         os.remove(file)
-                else:
-                    to_mp4(file, base_path, base_path)
-                    video_converted = True
-            if file.suffix.lower() in image_list:
-                # since the name might be changed, the file deletion will be handled in function
-                to_jpg(file, base_path, base_path)
-        else:
-            full_output_path = output_path / file.relative_to(base_path)
-            if not full_output_path.exists():
-                full_output_path.mkdir(parents=True)
-            if file.suffix.lower() == ".wav":
-                to_ogg(file, output_path, base_path)
-            if file.suffix.lower() in video_list:
-                # since the name might be changed, the file deletion will be handled in function
-                if video_converted:
-                    logger.info("multiple videos detected, deleting the extra file...")
-                    try:
-                        os.remove(file)
-                    except PermissionError:
-                        os.chmod(file, stat.S_IWRITE)
-                        os.remove(file)
-                else:
-                    to_mp4(file, output_path, base_path)
-                    video_converted = True
-            if file.suffix.lower() in image_list:
-                # since the name might be changed, the file deletion will be handled in function
-                to_jpg(file, output_path, base_path)
+                if file.suffix.lower() in video_list:
+                    # since the name might be changed, the file deletion will be handled in function
+                    if video_converted:
+                        logger.info("multiple videos detected, deleting the extra file...")
+                        try:
+                            os.remove(file)
+                        except PermissionError:
+                            os.chmod(file, stat.S_IWRITE)
+                            os.remove(file)
+                    else:
+                        to_mp4(file, base_path, base_path)
+                        video_converted = True
+                if file.suffix.lower() in image_list:
+                    # since the name might be changed, the file deletion will be handled in function
+                    to_jpg(file, base_path, base_path)
             else:
-                # print(f"{file} -> {full_output_path}")
-                shutil.copy(file, full_output_path)
+                full_output_path = output_path / file.relative_to(base_path)
+                if not full_output_path.exists():
+                    full_output_path.mkdir(parents=True)
+                if file.suffix.lower() == ".wav":
+                    to_ogg(file, output_path, base_path)
+                if file.suffix.lower() in video_list:
+                    # since the name might be changed, the file deletion will be handled in function
+                    if video_converted:
+                        logger.info("multiple videos detected, deleting the extra file...")
+                        try:
+                            os.remove(file)
+                        except PermissionError:
+                            os.chmod(file, stat.S_IWRITE)
+                            os.remove(file)
+                    else:
+                        to_mp4(file, output_path, base_path)
+                        video_converted = True
+                if file.suffix.lower() in image_list:
+                    # since the name might be changed, the file deletion will be handled in function
+                    to_jpg(file, output_path, base_path)
+                else:
+                    # print(f"{file} -> {full_output_path}")
+                    shutil.copy(file, full_output_path)
+        pbar.close()
     open(subdir / "processed_w", "a").close()
     logger.info(f"finished processing {subdir}")
 
-
 if __name__ == "__main__":
-    print(list_files(Path(r"G:\nythil bms pack\jp\hiragana_katakana_misc\りりくろ！")))
-    # raise Exception("This should not be ran independently.")
+    raise Exception("This should not be ran independently.")
