@@ -61,7 +61,10 @@ def main():
                 future.result()
             except Exception as exc:
                 logger.error(f'Processing generated an exception: {exc}')
-                return 1
+
+    for bms_folder in tqdm(sorted(all_folder_path), desc="Rechecking all folders...", unit="folders", position=0): # failsafe because multithread is buggy (IDK WHAT IM DOING)
+        logger.info(f"Processing {bms_folder}...")
+        process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place)
 
 
 if __name__ == "__main__":

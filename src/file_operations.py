@@ -1,9 +1,7 @@
-from multiprocessing import current_process
 import shutil
 import os
 import stat
 import logging  
-from tqdm import tqdm
 from audio_conversion import to_ogg
 from video_conversion import to_mp4
 from image_conversion import to_jpg
@@ -13,13 +11,14 @@ logging.basicConfig(filename='latest.log' ,level=logging.INFO, format='%(asctime
 
 # make sure subdir is absolute path
 def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
-    current = current_process()
     if (subdir/ "processed_w") in subdir.iterdir():
         logger.info(f"processed_w found at {subdir}, skipping")
         return
     video_converted = False
-    for file in tqdm(subdir.iterdir(), total=len(list(subdir.iterdir())), desc=f"{subdir.name}", unit="files", position=current._identity[0] - 1, leave=False):
+    for file in subdir.iterdir():
         if file.is_file():
+            if file.stem.endswith("_old"):
+                os.rename(file, file.with_stem(file.stem.replace("_old", "")))
             if in_place:
                 if file.suffix.lower() == '.wav':
                     to_ogg(file, base_path, base_path)
@@ -69,7 +68,6 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                     shutil.copy(file, full_output_path)
     open(subdir / "processed_w", 'a').close()
     logger.info(f"finished processing {subdir}")
-    tqdm.close()
 if __name__ == "__main__":
     raise Exception("This should not be ran independently.")
                 
