@@ -5,3 +5,5 @@ def integrity_check(bms): # bms is path object
     for file in file_list:
         file_path = bms.parent / file
         if not file_path.exists():
+            pass
+        

@@ -6,8 +6,8 @@ from tqdm import tqdm
 from audio_conversion import to_ogg
 from video_conversion import to_mp4
 from image_conversion import to_jpg
-from pathlib import Path
 from multiprocessing import current_process
+import sys
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     filename="latest.log",
@@ -95,9 +95,7 @@ def process_files_subdirectory(
                 else:
                     # print(f"{file} -> {full_output_path}")
                     shutil.copy(file, full_output_path)
-        pbar.close()
     open(subdir / "processed_w", "a").close()
     logger.info(f"finished processing {subdir}")
-
 if __name__ == "__main__":
     raise Exception("This should not be ran independently.")
