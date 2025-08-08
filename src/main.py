@@ -6,7 +6,7 @@ import os
 import shutil
 import logging
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from constants import USE_MULTITHREAD
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
@@ -56,14 +56,14 @@ def main():
 
 
     if USE_MULTITHREAD:
-        with ThreadPoolExecutor() as executor:
+        with ProcessPoolExecutor() as executor:
             # Submit tasks to the executor
             # We use a list comprehension to create a list of futures
             futures = [executor.submit(process_files_subdirectory, bms_folder, output_path, base_path, in_place=in_place, ignore_processed=ignore_processed)
                        for bms_folder in sorted(all_folder_path)]
 
             # Use tqdm to show progress as futures complete
-            for future in tqdm(as_completed(futures), total=len(futures), desc="Progressing", unit="folders", position=0):
+            for future in tqdm(as_completed(futures), total=len(futures), desc="Progressing", unit="folders", position=0, leave=True):
                 # Calling .result() will re-raise any exceptions that occurred in the thread
                 # and effectively waits for the future to complete.
                 # You might want to add error handling here if process_files_subdirectory can fail.
@@ -71,10 +71,11 @@ def main():
                     future.result()
                 except Exception as exc:
                     logger.error(f'Processing generated an exception: {exc}')
+                    raise({exc})
 
-    for bms_folder in tqdm(sorted(all_folder_path), desc="Rechecking all folders...", unit="folders", position=0): # failsafe because multithread is buggy (IDK WHAT IM DOING)
+    '''for bms_folder in tqdm(sorted(all_folder_path), desc="Rechecking all folders...", unit="folders", position=0): # failsafe because multithread is buggy (IDK WHAT IM DOING)
         logger.info(f"Processing {bms_folder}...")
-        process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place, ignore_processed=ignore_processed)
+        process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place, ignore_processed=ignore_processed)'''
 
 
 if __name__ == "__main__":
