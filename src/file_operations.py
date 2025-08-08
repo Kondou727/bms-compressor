@@ -8,13 +8,17 @@ from image_conversion import to_jpg
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log' ,level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
-
+video_list = ['.mpg', '.avi', '.mp4', '.wmv', '.m1v', '.mpeg', '.m2v']
+image_list = ['.png', '.bmp', 'jpeg', 'jpg']
 # make sure subdir is absolute path
-def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
-    if (subdir/ "processed_w") in subdir.iterdir():
+def process_files_subdirectory(subdir, output_path, base_path, in_place=False, ignore_processed=False):
+    if (subdir/ "processed_w") in subdir.iterdir() and not ignore_processed:
         logger.info(f"processed_w found at {subdir}, skipping")
         return
     video_converted = False
+    if ignore_processed:
+        video_list.remove('.mp4')
+        image_list.remove('.jpg')
     for file in subdir.iterdir():
         if file.is_file():
             if file.stem.endswith("_old"):
@@ -27,7 +31,7 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                     except PermissionError:
                         os.chmod(file, stat.S_IWRITE)
                         os.remove(file)
-                if file.suffix.lower() in ['.mpg', '.avi', '.mp4', '.wmv', '.m1v', '.mpeg', '.m2v']:
+                if file.suffix.lower() in video_list:
                     # since the name might be changed, the file deletion will be handled in function
                     if video_converted:
                         logger.info("multiple videos detected, deleting the extra file...")
@@ -39,7 +43,7 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                     else:
                         to_mp4(file, base_path, base_path) 
                         video_converted = True
-                if file.suffix.lower() in ['.png', '.bmp', 'jpeg', 'jpg']:
+                if file.suffix.lower() in image_list:
                     # since the name might be changed, the file deletion will be handled in function
                     to_jpg(file, base_path, base_path) 
             else:
@@ -48,7 +52,7 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                     full_output_path.mkdir(parents=True)
                 if file.suffix.lower() == '.wav':
                     to_ogg(file, output_path, base_path)
-                if file.suffix.lower() in ['.mpg', '.avi', '.mp4', '.wmv', '.m1v', '.mpeg', '.m2v']:
+                if file.suffix.lower() in video_list:
                     # since the name might be changed, the file deletion will be handled in function
                     if video_converted:
                         logger.info("multiple videos detected, deleting the extra file...")
@@ -60,7 +64,7 @@ def process_files_subdirectory(subdir, output_path, base_path, in_place=False):
                     else:
                         to_mp4(file, output_path, base_path) 
                         video_converted = True
-                if file.suffix.lower() in ['.png', '.bmp', 'jpeg', 'jpg']:
+                if file.suffix.lower() in image_list:
                     # since the name might be changed, the file deletion will be handled in function
                     to_jpg(file, output_path, base_path) 
                 else:

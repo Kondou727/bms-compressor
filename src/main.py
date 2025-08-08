@@ -39,6 +39,13 @@ def main():
             output_path = Path(output_path)
         if not output_path.exists():
             raise Exception("Path not found!")
+    ignore_processed = input("Reprocess all files? (this disables multithreading.) (y/n): ")
+    while (ignore_processed not in ['y', 'n']):
+        ignore_processed = input("Input should only be y or n. Try again: ").lower().strip()
+    if ignore_processed == 'y':
+        ignore_processed = True
+    else:
+        ignore_processed = False
     all_bms_path = bms_file_reading.list_all_files_with_extension(base_path, "bms") + bms_file_reading.list_all_files_with_extension(base_path, "bme")
     all_folder_path = bms_file_reading.get_all_relative_paths(all_bms_path)
     logger.info(f"base_path = {base_path}, output_path = {output_path} (should be same as base_path if in_place is true), in_place = {in_place}")
@@ -46,25 +53,26 @@ def main():
     # Use a ThreadPoolExecutor
     # max_workers can be adjusted based on your CPU cores and I/O speed
     # A common starting point is os.cpu_count() or higher for I/O-bound tasks
-    with ProcessPoolExecutor(max_workers=int(os.cpu_count()/2)) as executor:
-        # Submit tasks to the executor
-        # We use a list comprehension to create a list of futures
-        futures = [executor.submit(process_files_subdirectory, bms_folder, output_path, base_path, in_place=in_place)
-                   for bms_folder in sorted(all_folder_path)]
-        
-        # Use tqdm to show progress as futures complete
-        for future in tqdm(futures, desc="Progress", unit="folders", position=0):
-            # Calling .result() will re-raise any exceptions that occurred in the thread
-            # and effectively waits for the future to complete.
-            # You might want to add error handling here if process_files_subdirectory can fail.
-            try:
-                future.result()
-            except Exception as exc:
-                logger.error(f'Processing generated an exception: {exc}')
+    if not ignore_processed:
+        with ProcessPoolExecutor(max_workers=int(os.cpu_count()/2)) as executor:
+            # Submit tasks to the executor
+            # We use a list comprehension to create a list of futures
+            futures = [executor.submit(process_files_subdirectory, bms_folder, output_path, base_path, in_place=in_place)
+                       for bms_folder in sorted(all_folder_path)]
+
+            # Use tqdm to show progress as futures complete
+            for future in tqdm(futures, desc="Progress", unit="folders", position=0):
+                # Calling .result() will re-raise any exceptions that occurred in the thread
+                # and effectively waits for the future to complete.
+                # You might want to add error handling here if process_files_subdirectory can fail.
+                try:
+                    future.result()
+                except Exception as exc:
+                    logger.error(f'Processing generated an exception: {exc}')
 
     for bms_folder in tqdm(sorted(all_folder_path), desc="Rechecking all folders...", unit="folders", position=0): # failsafe because multithread is buggy (IDK WHAT IM DOING)
         logger.info(f"Processing {bms_folder}...")
-        process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place)
+        process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place, ignore_processed=ignore_processed)
 
 
 if __name__ == "__main__":
