@@ -12,11 +12,14 @@ def to_mp4(input_file, output_path, base_path):
     logging.info(f"{input_file} -> {output_file}")
     if output_file.exists():
         new_path = input_file.with_stem(input_file.stem + "_old")
-        os.rename(input_file, input_file.with_stem(input_file.stem + "_old"))
+        if new_path.exists(): #if for some reason _old already exists uses this as the input
+            os.remove(input_file)
+        else:
+            os.rename(input_file, input_file.with_stem(input_file.stem + "_old"))
         input_file = new_path
     output_file.parent.mkdir(parents=True, exist_ok=True)
     try:
-        ffmpeg.input(str(input_file)).output(str(output_file), vcodec='libx264', preset="slow", crf=CRF, an=None).global_args('-loglevel', 'quiet').run()
+        ffmpeg.input(str(input_file)).output(str(output_file), vcodec='libx264', preset="slow", crf=CRF, an=None).global_args('-loglevel', 'quiet').overwrite_output().run()
     except ffmpeg._run.Error as e:
         logging.warning(e)
     # remove old file

@@ -8,7 +8,18 @@ def get_audio_files(subdir):
         if file.is_file() and file.suffix.lower() in ['.ogg', '.wav']:
             audio_files.append(file)
     
-    return audio_files        
+    return audio_files
+
+def get_necessary_files(bms):
+    files = []
+    with open(bms, "r") as file:
+        for line in file:
+            if "MAIN DATA FIELD" in line:
+                break
+            left, right = line.strip().split(maxsplit=1)
+            if left in ["#BMP", "#WAV", "#OGG", "#BANNER", "#STAGEFILE"]:
+                files.append(right)
+    return files
 # this returns the absolute path, like "G:\nythil bms pack\eng\A\Aztec Altar\436.bms"
 def list_all_files_with_extension(path, extension): 
     output = []
