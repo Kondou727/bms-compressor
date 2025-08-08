@@ -6,6 +6,7 @@ import os
 import shutil
 import logging
 import time
+from concurrent.futures import ProcessPoolExecutor
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='latest.log', level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y/%m/%d %I:%M:%S %p')
 
@@ -41,9 +42,26 @@ def main():
     all_bms_path = bms_file_reading.list_all_files_with_extension(base_path, "bms") + bms_file_reading.list_all_files_with_extension(base_path, "bme")
     all_folder_path = bms_file_reading.get_all_relative_paths(all_bms_path)
     logger.info(f"base_path = {base_path}, output_path = {output_path} (should be same as base_path if in_place is true), in_place = {in_place}")
-    for bms_folder in tqdm(sorted(all_folder_path), desc="Progress", unit="folders", position=0):
-        logger.info(f"Processing {bms_folder}...")
-        process_files_subdirectory(bms_folder, output_path, base_path, in_place=in_place)
+
+    # Use a ThreadPoolExecutor
+    # max_workers can be adjusted based on your CPU cores and I/O speed
+    # A common starting point is os.cpu_count() or higher for I/O-bound tasks
+    with ProcessPoolExecutor(max_workers=int(os.cpu_count()/2)) as executor:
+        # Submit tasks to the executor
+        # We use a list comprehension to create a list of futures
+        futures = [executor.submit(process_files_subdirectory, bms_folder, output_path, base_path, in_place=in_place)
+                   for bms_folder in sorted(all_folder_path)]
+        
+        # Use tqdm to show progress as futures complete
+        for future in tqdm(futures, desc="Progress", unit="folders", position=0):
+            # Calling .result() will re-raise any exceptions that occurred in the thread
+            # and effectively waits for the future to complete.
+            # You might want to add error handling here if process_files_subdirectory can fail.
+            try:
+                future.result()
+            except Exception as exc:
+                logger.error(f'Processing generated an exception: {exc}')
+                return 1
 
 
 if __name__ == "__main__":

@@ -11,7 +11,10 @@ def to_jpg(input_file, output_path, base_path):
     logging.info(f"{input_file} -> {output_file}")    # if reprocessing or file is already jpg
     if output_file.exists():
         new_path = input_file.with_stem(input_file.stem + "_old")
-        os.rename(input_file, input_file.with_stem(input_file.stem + "_old"))
+        if new_path.exists():
+            os.remove(input_file)
+        else:
+            os.rename(input_file, input_file.with_stem(input_file.stem + "_old"))
         input_file = new_path
     try:
         with Image.open(input_file) as img:

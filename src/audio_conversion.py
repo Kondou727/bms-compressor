@@ -13,7 +13,7 @@ def to_ogg(input_file, output_path, base_path):
         return
     output_file.parent.mkdir(parents=True, exist_ok=True)
     try:
-        ffmpeg.input(str(input_file)).output(str(output_file), aq=AQ).global_args('-loglevel', 'quiet').run()
+        ffmpeg.input(str(input_file)).output(str(output_file), aq=AQ).global_args('-loglevel', 'quiet').run(overwrite_output=False)
     except ffmpeg._run.Error as e:
         logging.warning(e)
     
