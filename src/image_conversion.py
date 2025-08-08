@@ -14,15 +14,12 @@ def to_jpg(input_file, output_path, base_path):
         os.rename(input_file, input_file.with_stem(input_file.stem + "_old"))
         input_file = new_path
     try:
-        img = Image.open(input_file)
-    except Image.UnidentifiedImageError:
-        logging.warning("image is invalid. might be corrupted? skipping...")
-        return
-    if img.mode != "RGB":
-        img = img.convert("RGB")
-    
-    img.save(output_file, quality=JPG_QUALITY)
-    
+        with Image.open(input_file) as img:
+            if img.mode != "RGB":
+                img = img.convert("RGB")
+            img.save(output_file, quality=JPG_QUALITY)
+    except Exception as e:
+        logging.warning(f"{e}, skipping...")
     try:
         os.remove(input_file)
     except PermissionError:
